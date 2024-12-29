@@ -9,38 +9,6 @@ from logger.sql.create_tables import create_tables
 from settings import SQLITE_DATABASE_LOCATION, LoggerMethod
 
 
-class PacketLogData:
-    PacketDataId = None
-    PacketType = None
-    SourceAddress = None
-    SourcePort = None
-    DestinationAddress = None
-    DestinationPort = None
-    PacketLengthBytes = None
-    TimeCaptured = None
-
-    def __init__(self, packet: Packet):
-        self.PacketType = packet.highest_layer
-        self.SourceAddress = packet.ip.src
-
-        for layer in packet.layers:
-            port = [getattr(layer, attr) for attr in dir(layer) if attr == 'srcport']
-            if port:
-                self.SourcePort = int(port[0])
-                break
-
-        self.DestinationAddress = packet.ip.dst
-
-        for layer in packet.layers:
-            port = [getattr(layer, attr) for attr in dir(layer) if attr == 'dstport']
-            if port:
-                self.DestinationPort = int(port[0])
-                break
-
-        self.PacketLengthBytes = packet.length
-        self.TimeCaptured = time.ctime(float(packet.sniff_timestamp))
-
-
 class Logger:
 
     method = None
